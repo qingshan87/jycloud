@@ -1,0 +1,50 @@
+server:
+  port: 6001
+
+spring:
+  profiles:
+    active: @profileActive@
+  application:
+    name: jy-user
+  web:
+    resources:
+      add-mappings: false
+
+# Knife4j 基础开关
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+# 底层 OpenAPI 路径配置
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+  packages-to-scan: com.jycloud.user.controller  # 替换为你的 controller 包路径
+
+mybatis-plus:
+  # XML 映射文件位置（若全用注解可省略）
+  mapper-locations: classpath*:/mapper/**/*.xml
+  # 实体类包路径（XML 中可省略包名）
+  type-aliases-package: com.jy.**.entity
+
+  global-config:
+    banner: false # 关闭启动 MP 横幅
+    db-config:
+      id-type: ASSIGN_ID # 雪花算法主键（分布式推荐）
+      table-prefix: t_ # 表前缀（如 t_user，按需修改）
+      logic-delete-field: deleted # 逻辑删除字段名
+      logic-delete-value: 1 # 已删除值
+      logic-not-delete-value: 0 # 未删除值
+
+  configuration:
+    map-underscore-to-camel-case: true # 驼峰映射（默认 true，显式声明防歧义）
+    cache-enabled: false # 分布式环境必须关闭二级缓存
+
+
+sys:
+  ip2region:
+    path: D:\Developer\tools\ip2region\ip2region_v4.xdb

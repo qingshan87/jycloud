@@ -1,0 +1,28 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 120.27.143.176:8848
+        namespace: df2264cd-17e3-47d4-9dc8-e7e32dedc84e
+
+  datasource:
+    url: jdbc:mysql://120.27.143.176:3306/jy_cloud?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:Passw0rd@123!!}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # ⚠️ 仅开发环境使用
+
+# 日志配置
+logging:
+  file:
+    path: D:/Developer/log
+

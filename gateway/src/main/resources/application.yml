@@ -1,0 +1,36 @@
+server:
+  port: 9999
+
+spring:
+  profiles:
+    active: @profileActive@
+  application:
+    name: jy-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: jy-user
+          uri: lb://jy-user
+          predicates:
+            - Path=/jy-user/**
+          filters:
+            - StripPrefix=1
+
+logging:
+  level:
+    com.jycloud.gateway: DEBUG  # 你的过滤器日志级别
+    org.springframework.cloud.gateway: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n"
+
+# ✅ Knife4j 聚合配置
+knife4j:
+  enable: true
+  gateway:
+    enabled: true
+    strategy: manual  # manual(手动) 或 discover(自动)
+    routes:
+      - name: 用户服务
+        service-name: jy-user
+        url: /jy-user/v3/api-docs      # 🔑 改为 /jy-user，能被 predicates 匹配
+        context-path: /jy-user         # 🔑 改为 /jy-user

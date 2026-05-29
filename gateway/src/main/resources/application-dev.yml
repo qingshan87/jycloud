@@ -1,0 +1,12 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 120.27.143.176:8848
+        namespace: df2264cd-17e3-47d4-9dc8-e7e32dedc84e
+
+
+# 日志配置
+logging:
+  file:
+    path: D:/Developer/log

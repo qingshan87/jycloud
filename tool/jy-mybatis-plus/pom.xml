@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.jycloud</groupId>
+        <artifactId>tool</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>jy-mybatis-plus</artifactId>
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <!-- ========== 数据库驱动（坐标变更 + provided） ========== -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId> <!-- ⭐ 新坐标 -->
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- ========== 连接池（Druid 已支持 SB3） ========== -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- ========== MyBatis-Plus 核心（SB3 专用 Starter） ========== -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- ⭐ 显式声明 jsqlparser（TenantLineHandler 接口依赖） -->
+        <dependency>
+            <groupId>com.github.jsqlparser</groupId>
+            <artifactId>jsqlparser</artifactId>
+            <version>4.9</version> <!-- 与 MP 3.5.9 兼容 -->
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- ========== SQL 打印（p6spy 已支持 SB3） ========== -->
+        <dependency>
+            <groupId>p6spy</groupId>
+            <artifactId>p6spy</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- ========== 代码生成器（仅编译期需要，runtime 移除） ========== -->
+<!--        <dependency>-->
+<!--            <groupId>com.baomidou</groupId>-->
+<!--            <artifactId>mybatis-plus-generator</artifactId>-->
+<!--            <version>${dynamic-datasource.version}</version>-->
+<!--            <scope>provided</scope> &lt;!&ndash; ⭐ 生成器仅开发期用，不打包 &ndash;&gt;-->
+<!--        </dependency>-->
+
+        <!-- ========== 工具类 ========== -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- 内部工具 -->
+        <dependency>
+            <groupId>com.jycloud</groupId>
+            <artifactId>jy-common</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>
