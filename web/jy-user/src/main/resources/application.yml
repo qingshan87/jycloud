@@ -17,13 +17,13 @@ knife4j:
     language: zh_cn
 
 # 底层 OpenAPI 路径配置
-springdoc:
-  api-docs:
-    enabled: true
-    path: /v3/api-docs
-  swagger-ui:
-    enabled: true
-  packages-to-scan: com.jycloud.user.controller  # 替换为你的 controller 包路径
+#springdoc:
+#  api-docs:
+#    enabled: true
+#    path: /v3/api-docs
+#  swagger-ui:
+#    enabled: true
+#  packages-to-scan: com.jycloud.web.user.controller  # Controller 包路径
 
 mybatis-plus:
   # XML 映射文件位置（若全用注解可省略）
@@ -44,7 +44,20 @@ mybatis-plus:
     map-underscore-to-camel-case: true # 驼峰映射（默认 true，显式声明防歧义）
     cache-enabled: false # 分布式环境必须关闭二级缓存
 
+wx:
+  miniapp:
+    apps:
+      # 测试 无用
+      - app-id: wxfb5bcf3182e5eff5
+        secret: 71a94aa97875f31d416b05be9b44119b
+      # 旧改采集
+      - app-id: wxfb5bcf3182e5eff6
+        secret: 71a94aa97875f31d416b05be9b44119b
 
 sys:
   ip2region:
     path: D:\Developer\tools\ip2region\ip2region_v4.xdb
+  tenant:
+    enabled: true
+    column: tenant_id
+

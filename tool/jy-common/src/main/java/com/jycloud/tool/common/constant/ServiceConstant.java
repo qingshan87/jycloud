@@ -28,7 +28,7 @@ public interface ServiceConstant {
     /**
      * 应用名前缀
      */
-    String APPLICATION_NAME_PREFIX = "jg-";
+    String APPLICATION_NAME_PREFIX = "jy-";
 
     /**
      * 网关模块名称

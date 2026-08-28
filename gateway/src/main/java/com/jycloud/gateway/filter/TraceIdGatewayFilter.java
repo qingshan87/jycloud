@@ -10,37 +10,39 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
+import static com.jycloud.tool.common.constant.HeaderConstant.REQUEST_ID;
+import static com.jycloud.tool.common.constant.HeaderConstant.TRACE_ID;
+
 @Component
 public class TraceIdGatewayFilter implements GlobalFilter, Ordered {
-
-    private static final String TRACE_ID_HEADER = "X-Trace-Id";
-    private static final String REQUEST_ID_HEADER = "X-Request-Id";
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         // 1. 优先从上游获取，没有则生成
-        String traceId = exchange.getRequest().getHeaders().getFirst(TRACE_ID_HEADER);
+        String traceId = exchange.getRequest().getHeaders().getFirst(TRACE_ID);
         if (traceId == null || traceId.isBlank()) {
-            GENERATOR
             traceId = UUID.randomUUID().toString().replace("-", "");
         }
 
         // 2. 构造新请求头（响应式不可变对象，必须 mutate）
         ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
-                .header(TRACE_ID_HEADER, traceId)
-                .header(REQUEST_ID_HEADER, traceId) // 兼容老系统
+                .header(TRACE_ID, traceId)
+                .header(REQUEST_ID, traceId) // 兼容老系统
                 .build();
 
         // 3. 将 traceId 存入 Exchange 属性，供 Gateway 自身日志/监控使用
         exchange.getAttributes().put("traceId", traceId);
 
-        // 4. 执行下游路由 + 响应后追加 Header
+        // 4. 在响应提交前追加 Header（提交后 Header 变为只读，不能再 add）
         String finalTraceId = traceId;
-        return chain.filter(exchange.mutate().request(mutatedRequest).build())
-                .then(Mono.fromRunnable(() -> {
-                    exchange.getResponse().getHeaders().add(TRACE_ID_HEADER, finalTraceId);
-                    exchange.getResponse().getHeaders().add(REQUEST_ID_HEADER, finalTraceId);
-                }));
+        exchange.getResponse().beforeCommit(() -> {
+            exchange.getResponse().getHeaders().set(TRACE_ID, finalTraceId);
+            exchange.getResponse().getHeaders().set(REQUEST_ID, finalTraceId);
+            return Mono.empty();
+        });
+
+        // 5. 执行下游路由
+        return chain.filter(exchange.mutate().request(mutatedRequest).build());
     }
 
     @Override

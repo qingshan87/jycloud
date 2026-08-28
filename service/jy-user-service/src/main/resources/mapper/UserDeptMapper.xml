@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jycloud.service.user.repository.mapper.UserDeptMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jycloud.api.user.entity.UserDept">
+        <id column="id" property="id" />
+        <result column="dept_id" property="deptId" />
+        <result column="user_id" property="userId" />
+        <result column="tenant_id" property="tenantId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, dept_id, user_id, tenant_id
+    </sql>
+
+</mapper>

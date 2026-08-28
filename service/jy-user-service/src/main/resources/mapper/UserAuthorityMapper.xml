@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jycloud.service.user.repository.mapper.UserAuthorityMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jycloud.api.user.entity.UserAuthority">
+        <id column="id" property="id" />
+        <result column="category" property="category" />
+        <result column="user_id" property="userId" />
+        <result column="data_id" property="dataId" />
+        <result column="tenant_id" property="tenantId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, category, user_id, data_id, tenant_id
+    </sql>
+
+    <!-- 查询用户在该租户下拥有的角色标识（role_name）集合 -->
+    <select id="selectRoleNames" resultType="java.lang.String">
+        SELECT r.role_name
+        FROM t_user_authority ua
+        INNER JOIN t_role r ON r.role_id = ua.data_id
+        WHERE ua.category = 0
+          AND ua.user_id = #{userId}
+          AND ua.tenant_id = #{tenantId}
+          AND r.delete_flag = 0
+          AND r.status = 1
+    </select>
+
+</mapper>

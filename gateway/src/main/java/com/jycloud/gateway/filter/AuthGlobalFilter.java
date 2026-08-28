@@ -21,8 +21,8 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
 
     // 固定业务白名单
     private static final List<String> WHITE_LIST = List.of(
-            "/api/auth/login",
-            "/api/auth/register",
+            "/jy-user/system/auth/login",
+            "/jy-user/system/auth/register",
             "/error",
             "/favicon.ico"
     );
@@ -38,6 +38,7 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
 
         // 匹配固定业务白名单
         if (WHITE_LIST.stream().anyMatch(path::startsWith)) {
+            System.out.println("匹配固定业务白名单: " + path);
             return chain.filter(exchange);
         }
 

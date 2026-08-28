@@ -11,5 +11,40 @@
 
     <artifactId>jy-user-service</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jycloud</groupId>
+            <artifactId>jy-user-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jycloud</groupId>
+            <artifactId>jy-cache</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jycloud</groupId>
+            <artifactId>jy-permission</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>mapper/**/*.xml</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
 
 </project>

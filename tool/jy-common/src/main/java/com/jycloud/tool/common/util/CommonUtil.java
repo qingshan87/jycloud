@@ -1,9 +1,12 @@
 package com.jycloud.tool.common.util;
 
+import com.jycloud.tool.common.constant.StringPool;
 import com.jycloud.tool.common.function.CacheSelector;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.function.Supplier;
+import java.util.stream.IntStream;
 
 @Slf4j
 public class CommonUtil {
@@ -66,6 +69,31 @@ public class CommonUtil {
             log.info("encryptUtil解密失败：", e);
             return null;
         }
+    }
+
+    /**
+     * 驼峰转下划线
+     *
+     * @param value 待转换值
+     * @return 结果
+     */
+    public static String camelToUnderscore(String value) {
+        if (StringUtils.isBlank(value))
+            return value;
+        String[] arr = StringUtils.splitByCharacterTypeCamelCase(value);
+        if (arr.length == 0)
+            return value;
+        StringBuilder result = new StringBuilder();
+        IntStream.range(0, arr.length).forEach(i -> {
+            if (StringPool.UNDERSCORE.equals(arr[i])) {
+                return;
+            }
+            if (i != arr.length - 1)
+                result.append(arr[i]).append(StringPool.UNDERSCORE);
+            else
+                result.append(arr[i]);
+        });
+        return StringUtils.lowerCase(result.toString());
     }
 
     public static void main(String[] args) throws Exception {

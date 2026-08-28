@@ -10,5 +10,32 @@
     </parent>
 
     <artifactId>jy-user-api</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
 
+        <!-- Feign 接口注解（版本由 spring-cloud-dependencies BOM 管理） -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
+        <!-- 在 api 模块中引入纯注解包 -->
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations-jakarta</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jycloud</groupId>
+            <artifactId>jy-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.jycloud</groupId>
+            <artifactId>jy-mybatis-plus</artifactId>
+        </dependency>
+    </dependencies>
 </project>

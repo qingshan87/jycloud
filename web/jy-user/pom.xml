@@ -61,6 +61,17 @@
             <groupId>com.jycloud</groupId>
             <artifactId>jy-feign</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.jycloud</groupId>
+            <artifactId>jy-user-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jycloud</groupId>
+            <artifactId>jy-auth-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

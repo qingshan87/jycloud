@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jycloud.service.user.repository.mapper.ClientMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jycloud.api.user.entity.Client">
+        <id column="id" property="id" />
+        <result column="client_id" property="clientId" />
+        <result column="parent_id" property="parentId" />
+        <result column="category" property="category" />
+        <result column="icon" property="icon" />
+        <result column="app_name" property="appName" />
+        <result column="app_key" property="appKey" />
+        <result column="app_secret" property="appSecret" />
+        <result column="salt" property="salt" />
+        <result column="description" property="description" />
+        <result column="website" property="website" />
+        <result column="legal_ip" property="legalIp" />
+        <result column="status" property="status" />
+        <result column="create_uid" property="createUid" />
+        <result column="create_time" property="createTime" />
+        <result column="update_uid" property="updateUid" />
+        <result column="update_time" property="updateTime" />
+        <result column="delete_flag" property="deleteFlag" />
+        <result column="delete_time" property="deleteTime" />
+        <result column="delete_uid" property="deleteUid" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, client_id, parent_id, category, icon, app_name, app_key, app_secret, salt, description, website, legal_ip, status, create_uid, create_time, update_uid, update_time, delete_flag, delete_time, delete_uid
+    </sql>
+
+    <!-- ==================== 条件分页查询（映射为 VO，不返回敏感字段） ==================== -->
+    <select id="selectClientPage" resultType="com.jycloud.api.user.vo.ClientVO">
+        SELECT id, client_id, parent_id, category, icon, app_name, app_key,
+               description, website, legal_ip, status, create_time, update_time
+        FROM t_client
+        <where>
+            delete_flag = 0
+            <if test="queryDTO.clientId != null and queryDTO.clientId != ''">
+                AND client_id LIKE CONCAT(#{queryDTO.clientId}, '%')
+            </if>
+            <if test="queryDTO.category != null">
+                AND category = #{queryDTO.category}
+            </if>
+            <if test="queryDTO.appName != null and queryDTO.appName != ''">
+                AND app_name LIKE CONCAT('%', #{queryDTO.appName}, '%')
+            </if>
+            <if test="queryDTO.status != null">
+                AND status = #{queryDTO.status}
+            </if>
+        </where>
+    </select>
+
+    <!-- 逻辑删除业务系统 -->
+    <update id="deleteById">
+        UPDATE t_client
+        SET delete_flag = 1, delete_time = NOW(), delete_uid = #{deleteUid}
+        WHERE id = #{id} AND delete_flag = 0
+    </update>
+
+</mapper>

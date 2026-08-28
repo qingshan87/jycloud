@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jycloud.service.user.repository.mapper.DictMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jycloud.api.user.entity.Dict">
+        <id column="dict_id" property="dictId" />
+        <result column="parent_id" property="parentId" />
+        <result column="code" property="code" />
+        <result column="dict_key" property="dictKey" />
+        <result column="dict_value" property="dictValue" />
+        <result column="sort" property="sort" />
+        <result column="remark" property="remark" />
+        <result column="status" property="status" />
+        <result column="create_uid" property="createUid" />
+        <result column="create_time" property="createTime" />
+        <result column="update_uid" property="updateUid" />
+        <result column="update_time" property="updateTime" />
+        <result column="delete_flag" property="deleteFlag" />
+        <result column="delete_time" property="deleteTime" />
+        <result column="delete_uid" property="deleteUid" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        dict_id, parent_id, code, dict_key, dict_value, sort, remark, status, create_uid, create_time, update_uid, update_time, delete_flag, delete_time, delete_uid
+    </sql>
+
+    <!-- 逻辑删除字典 -->
+    <update id="deleteById">
+        UPDATE t_dict
+        SET delete_flag = 1, delete_time = NOW(), delete_uid = #{deleteUid}
+        WHERE dict_id = #{dictId} AND delete_flag = 0
+    </update>
+
+</mapper>

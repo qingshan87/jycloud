@@ -33,4 +33,8 @@ public class LoginVal {
      */
     private String token;
 
+    /**
+     * 链路追踪ID
+     */
+    private String traceId;
 }

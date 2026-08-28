@@ -13,6 +13,8 @@
     <packaging>pom</packaging>
     <modules>
         <module>jy-user</module>
+        <module>jy-ucenter</module>
+        <module>jy-setting</module>
     </modules>
 
     <properties>

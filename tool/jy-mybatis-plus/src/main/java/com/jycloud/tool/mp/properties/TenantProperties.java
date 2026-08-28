@@ -21,8 +21,18 @@ public class TenantProperties {
     private String column = "tenant_id";
 
     /**
+     * 是否启用了租户筛选功能
+     */
+    private Boolean enabled = true;
+
+    /**
      * 多租户数据表
      */
     private List<String> tables = new ArrayList<>();
+
+    /**
+     * 无需进行租户筛选的表格
+     */
+    private List<String> ignoreTables = new ArrayList<>();
 
 }

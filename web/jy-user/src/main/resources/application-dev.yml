@@ -17,6 +17,21 @@ spring:
       idle-timeout: 600000
       max-lifetime: 1800000
 
+  # Redis 缓存配置（Spring Boot 3 使用 spring.data.redis 前缀）
+  data:
+    redis:
+      host: ${REDIS_HOST:120.27.143.176}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:Passw0rd@123!!}
+      database: ${REDIS_DATABASE:8}
+      timeout: 5000ms
+      lettuce:
+        pool:
+          max-active: 16
+          max-idle: 8
+          min-idle: 0
+          max-wait: 3000ms
+
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # ⚠️ 仅开发环境使用

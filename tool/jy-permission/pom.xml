@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.jycloud</groupId>
+        <artifactId>tool</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>jy-permission</artifactId>
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <!-- jy-common：ServerResponse / SysException / UserContext -->
+        <dependency>
+            <groupId>com.jycloud</groupId>
+            <artifactId>jy-common</artifactId>
+        </dependency>
+
+        <!-- Spring AOP：@Aspect / @Around -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>META-INF/**</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+</project>

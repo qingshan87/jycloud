@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jycloud.service.user.repository.mapper.TenantClientMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jycloud.api.user.entity.TenantClient">
+        <id column="id" property="id" />
+        <result column="client_id" property="clientId" />
+        <result column="status" property="status" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="create_uid" property="createUid" />
+        <result column="create_time" property="createTime" />
+        <result column="update_uid" property="updateUid" />
+        <result column="update_time" property="updateTime" />
+        <result column="delete_flag" property="deleteFlag" />
+        <result column="delete_time" property="deleteTime" />
+        <result column="delete_uid" property="deleteUid" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, client_id, status, tenant_id, create_uid, create_time, update_uid, update_time, delete_flag, delete_time, delete_uid
+    </sql>
+
+    <!-- 查询租户绑定的应用列表（联表应用信息） -->
+    <select id="selectTenantClientVOList" resultType="com.jycloud.api.user.vo.TenantClientVO">
+        SELECT tc.id, tc.tenant_id, tc.client_id, tc.status,
+               c.app_name AS appName, c.category, c.icon, c.description, c.website, c.status AS clientStatus
+        FROM t_tenant_client tc
+        LEFT JOIN t_client c ON tc.client_id = c.client_id AND c.delete_flag = 0
+        WHERE tc.tenant_id = #{tenantId} AND tc.delete_flag = 0
+        ORDER BY tc.id DESC
+    </select>
+
+    <!-- 查询指定租户和应用的绑定记录（含已逻辑删除） -->
+    <select id="selectIncludeDeleted" resultType="com.jycloud.api.user.entity.TenantClient">
+        SELECT id, client_id, status, tenant_id, create_uid, create_time, update_uid, update_time, delete_flag, delete_time, delete_uid
+        FROM t_tenant_client
+        WHERE tenant_id = #{tenantId} AND client_id = #{clientId}
+        LIMIT 1
+    </select>
+
+    <!-- 重新启用已逻辑删除的绑定记录 -->
+    <update id="revive">
+        UPDATE t_tenant_client
+        SET delete_flag = 0, delete_time = NULL, delete_uid = NULL, status = #{status}, update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 逻辑删除租户应用绑定 -->
+    <update id="deleteById">
+        UPDATE t_tenant_client
+        SET delete_flag = 1, delete_time = NOW(), delete_uid = #{deleteUid}
+        WHERE id = #{id} AND delete_flag = 0
+    </update>
+
+</mapper>

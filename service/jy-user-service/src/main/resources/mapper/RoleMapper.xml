@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jycloud.service.user.repository.mapper.RoleMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jycloud.api.user.entity.Role">
+        <id column="role_id" property="roleId" />
+        <result column="role_name" property="roleName" />
+        <result column="remark" property="remark" />
+        <result column="sort" property="sort" />
+        <result column="readonly" property="readonly" />
+        <result column="status" property="status" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="create_uid" property="createUid" />
+        <result column="create_time" property="createTime" />
+        <result column="update_uid" property="updateUid" />
+        <result column="update_time" property="updateTime" />
+        <result column="delete_flag" property="deleteFlag" />
+        <result column="delete_time" property="deleteTime" />
+        <result column="delete_uid" property="deleteUid" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        role_id, role_name, remark, sort, readonly, status, tenant_id, create_uid, create_time, update_uid, update_time, delete_flag, delete_time, delete_uid
+    </sql>
+
+    <!-- 逻辑删除角色 -->
+    <update id="deleteById">
+        UPDATE t_role
+        SET delete_flag = 1, delete_time = NOW(), delete_uid = #{deleteUid}
+        WHERE role_id = #{roleId} AND delete_flag = 0
+    </update>
+
+    <!-- 批量逻辑删除角色 -->
+    <update id="deleteByIds">
+        UPDATE t_role
+        SET delete_flag = 1, delete_time = NOW(), delete_uid = #{deleteUid}
+        WHERE role_id IN
+        <foreach collection="roleIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        AND delete_flag = 0
+    </update>
+
+</mapper>

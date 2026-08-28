@@ -16,6 +16,9 @@
         <module>jy-common</module>
         <module>jy-feign</module>
         <module>jy-mybatis-plus</module>
+        <module>jy-code-generator</module>
+        <module>jy-cache</module>
+        <module>jy-permission</module>
     </modules>
 
 </project>

@@ -1,5 +1,5 @@
 server:
-  port: 9999
+  port: 9000
 
 spring:
   profiles:
@@ -15,6 +15,18 @@ spring:
             - Path=/jy-user/**
           filters:
             - StripPrefix=1
+        - id: jy-setting
+          uri: lb://jy-setting
+          predicates:
+            - Path=/jy-setting/**
+          filters:
+            - StripPrefix=1
+        - id: jy-ucenter
+          uri: lb://jy-ucenter
+          predicates:
+            - Path=/jy-ucenter/**
+          filters:
+            - StripPrefix=1
 
 logging:
   level:
@@ -28,9 +40,4 @@ knife4j:
   enable: true
   gateway:
     enabled: true
-    strategy: manual  # manual(手动) 或 discover(自动)
-    routes:
-      - name: 用户服务
-        service-name: jy-user
-        url: /jy-user/v3/api-docs      # 🔑 改为 /jy-user，能被 predicates 匹配
-        context-path: /jy-user         # 🔑 改为 /jy-user
+    strategy: discover  # manual(手动) 或 discover(自动)

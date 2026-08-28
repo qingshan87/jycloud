@@ -27,13 +27,15 @@
         <spring.cloud.version>2023.0.1</spring.cloud.version>
         <spring.cloud.alibaba.version>2023.0.1.2</spring.cloud.alibaba.version>
         <knife4j.version>4.5.0</knife4j.version>
-        <mybatis.plus.version>3.5.9</mybatis.plus.version>
+        <mybatis-plus.version>3.5.9</mybatis-plus.version>
         <mysql-connector-j.version>8.2.0</mysql-connector-j.version>
         <dynamic-datasource.version>4.3.0</dynamic-datasource.version>
         <druid.version>1.2.20</druid.version>
         <p6spy.version>3.9.1</p6spy.version>
         <transmittable.version>2.14.5</transmittable.version>
         <fastjson2.version>2.0.53</fastjson2.version>
+        <commons-pool2.version>2.12.0</commons-pool2.version>
+        <wx-java.version>4.7.0</wx-java.version>
     </properties>
 
     <dependencyManagement>
@@ -89,12 +91,17 @@
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
-                <version>${mybatis.plus.version}</version>
+                <version>${mybatis-plus.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-extension</artifactId>
-                <version>${mybatis.plus.version}</version>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-jsqlparser</artifactId>
+                <version>${mybatis-plus.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.alibaba</groupId>
@@ -126,6 +133,20 @@
                 <version>${fastjson2.version}</version>
             </dependency>
 
+            <!-- Redis 连接池（Lettuce） -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-pool2</artifactId>
+                <version>${commons-pool2.version}</version>
+            </dependency>
+
+            <!-- Swagger/OpenAPI 注解（knife4j 4.5.0 传递版本） -->
+            <dependency>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-annotations-jakarta</artifactId>
+                <version>2.2.22</version>
+            </dependency>
+
             <!-- 内部模块统一版本管理 -->
             <dependency>
                 <groupId>com.jycloud</groupId>
@@ -135,6 +156,26 @@
             <dependency>
                 <groupId>com.jycloud</groupId>
                 <artifactId>jy-feign</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.jycloud</groupId>
+                <artifactId>jy-mybatis-plus</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.jycloud</groupId>
+                <artifactId>jy-cache</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.jycloud</groupId>
+                <artifactId>jy-permission</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.jycloud</groupId>
+                <artifactId>jy-user-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
