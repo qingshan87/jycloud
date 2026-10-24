@@ -1,5 +1,6 @@
 package com.jycloud.service.user.assemble;
 
+import com.jycloud.api.user.constant.ClientCategoryEnum;
 import com.jycloud.api.user.constant.UcConstant;
 import com.jycloud.api.user.entity.Client;
 import com.jycloud.api.user.entity.Menu;
@@ -71,7 +72,7 @@ public class UserClientAssembleService {
         List<TenantClientVO> tenantClients = tenantClientService.listByTenant(tenantId);
         if (!CollectionUtils.isEmpty(tenantClients)) {
             tenantClients.stream()
-                    .filter(vo -> STATUS_ENABLED == vo.getStatus() && STATUS_ENABLED == vo.getClientStatus())
+                    .filter(vo -> ClientCategoryEnum.isOuter(vo.getCategory()) && STATUS_ENABLED == vo.getStatus() && STATUS_ENABLED == vo.getClientStatus())
                     .map(TenantClientVO::getClientId)
                     .filter(StringUtils::isNotBlank)
                     .forEach(clientIds::add);

@@ -15,7 +15,6 @@ import com.jycloud.service.user.repository.mapper.RoleMapper;
 import com.jycloud.service.user.service.RoleMenuService;
 import com.jycloud.service.user.service.RoleService;
 import com.jycloud.tool.common.api.ResponseCode;
-import com.jycloud.tool.common.constant.TenantConstant;
 import com.jycloud.tool.common.context.UserContext;
 import com.jycloud.tool.common.exception.SysException;
 import com.jycloud.tool.common.util.DtoEntityUtil;
@@ -24,6 +23,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -182,8 +184,6 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
 
         // 更新角色权限
         roleMenuService.setRoleMenus(roleDTO.getRoleId(), roleDTO.getMenuIds());
-
-        // TODO
     }
 
 
@@ -230,6 +230,26 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         return this.page(page, qw).convert(role -> DtoEntityUtil.trans(role, RoleVO.class));
     }
 
+    @Override
+    public List<RoleVO> listByTenantId(String tenantId, Integer readonly) {
+        tenantId = StringUtils.isNotBlank(tenantId) ? tenantId : UserContext.getTenantId();
+        if (StringUtils.isBlank(tenantId)) {
+            return List.of();
+        }
+        LambdaQueryWrapper<Role> qw = new LambdaQueryWrapper<>();
+        if (readonly != null){
+            qw.eq(Role::getReadonly, readonly);
+        }
+        qw.eq(Role::getTenantId, tenantId);
+        qw.orderByAsc(Role::getSort);
+        qw.orderByAsc(Role::getRoleId);
+        List<Role> roleList = this.list(qw);
+        return roleList.stream()
+                .filter(role -> !AdminRoleNameEnum.isSuperAdmin(role.getRoleName()))
+                .map(role -> DtoEntityUtil.trans(role, RoleVO.class))
+                .collect(Collectors.toList());
+    }
+
 
     // ======================== 私有方法 ========================
 
@@ -270,6 +290,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         long count = this.count(qw);
         return count > 0;
     }
+
     private boolean checkRoleName(String tenantId, String roleName) {
         return checkRoleName(tenantId, roleName, null);
     }

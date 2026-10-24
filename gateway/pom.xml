@@ -47,6 +47,30 @@
             <groupId>com.jycloud</groupId>
             <artifactId>jy-common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.jycloud</groupId>
+            <artifactId>jy-cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.jycloud</groupId>
+            <artifactId>jy-user-api</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter-openfeign</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.swagger.core.v3</groupId>
+                    <artifactId>swagger-annotations-jakarta</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.jycloud</groupId>
+                    <artifactId>jy-mybatis-plus</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>

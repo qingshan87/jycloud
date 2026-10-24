@@ -54,6 +54,15 @@ public interface UserService extends IService<User> {
     User update(User user);
 
     /**
+     * 编辑个人信息（当前登录用户）
+     * 仅允许修改：用户头像、真实姓名、邮箱、联系电话、性别、描述
+     *
+     * @param user 个人信息（userId 会被覆盖为当前登录用户ID）
+     * @return 更新后的用户
+     */
+    User updateProfile(User user);
+
+    /**
      * 更新用户名
      */
     void updateUsername(Long userId, String username);

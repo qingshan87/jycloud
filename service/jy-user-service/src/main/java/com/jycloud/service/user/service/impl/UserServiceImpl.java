@@ -130,15 +130,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         validateUniquenessForUpdate(user);
         // 查询旧数据，用于清除旧缓存（如旧手机号/用户名的索引）
         User oldUser = this.getUserById(user.getUserId());
+        if (oldUser == null) {
+            throw new SysException(ResponseCode.USER_NOT_EXIST);
+        }
 
         user.setUsername(null);
         user.setPassword(null);
         user.setSalt(null);
         this.baseMapper.updateById(user);
         // 清除旧缓存
-        if (oldUser != null) {
-            this.userCache.delUser(oldUser);
-        }
+        this.userCache.delUser(oldUser);
         // 重新缓存新数据
         User newUser = this.baseMapper.selectById(user.getUserId());
         if (newUser != null) {
@@ -149,6 +150,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             }
         }
         return newUser;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public User updateProfile(User user) {
+        String currentUserId = UserContext.getUserId();
+        if (StringUtils.isBlank(currentUserId)) {
+            throw new SysException(ResponseCode.UNAUTHORIZED);
+        }
+
+        // 使用当前登录用户ID，复用 update 完成更新（唯一性校验、缓存刷新均在其中处理）
+        user.setUserId(Long.valueOf(currentUserId));
+        return update(user);
     }
 
     @Override

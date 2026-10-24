@@ -61,9 +61,6 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
         client.setAppKey(appKey);
         client.setAppSecret(AppUtil.generateAppSecret(appKey, salt));
 
-        if (client.getCategory() == null) {
-            client.setCategory(1);
-        }
         if (client.getStatus() == null) {
             client.setStatus(1);
         }

@@ -8,6 +8,7 @@ import com.jycloud.service.user.service.RoleService;
 import com.jycloud.tool.common.api.ServerResponse;
 import com.jycloud.tool.common.base.ValidationGroups;
 import com.jycloud.tool.common.constant.ServiceConstant;
+import com.jycloud.tool.common.context.UserContext;
 import com.jycloud.tool.permission.annotation.RequirePermission;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @Slf4j
 @Validated
@@ -53,8 +56,16 @@ public class RoleController {
     @Operation(summary = "条件分页查询角色列表")
     @GetMapping("/page")
     public ServerResponse<IPage<RoleVO>> page(@ParameterObject @Validated RoleQueryDTO dto) {
+        dto.setReadonly(1);
         IPage<RoleVO> page = roleService.pageByCondition(dto);
         return ServerResponse.successData(page);
+    }
+
+    @Operation(summary = "查询当前租户的角色列表,用于角色设置的下拉框")
+    @GetMapping("/list")
+    public ServerResponse<List<RoleVO>> list() {
+        List<RoleVO> list = roleService.listByTenantId(UserContext.getTenantId(), 1);
+        return ServerResponse.successData(list);
     }
 
     @Operation(summary = "角色详情")

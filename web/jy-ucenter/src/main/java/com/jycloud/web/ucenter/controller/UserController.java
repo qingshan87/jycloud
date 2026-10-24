@@ -1,11 +1,14 @@
 package com.jycloud.web.ucenter.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jycloud.api.user.dto.PasswordDTO;
 import com.jycloud.api.user.dto.UserDTO;
 import com.jycloud.api.user.dto.UserQueryDTO;
 import com.jycloud.api.user.entity.User;
 import com.jycloud.api.user.vo.UserVO;
+import com.jycloud.service.user.assemble.UserDetailAssembleService;
 import com.jycloud.service.user.service.UserService;
+import com.jycloud.service.user.service.UserTenantService;
 import com.jycloud.tool.common.api.ServerResponse;
 import com.jycloud.tool.common.base.ValidationGroups;
 import com.jycloud.tool.common.constant.ServiceConstant;
@@ -17,6 +20,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +44,8 @@ public class UserController {
     private static final String PERM_PREFIX = ServiceConstant.UCENTER_NAME + ":user:";
 
     private final UserService userService;
+    private final UserTenantService userTenantService;
+    private final UserDetailAssembleService userDetailAssembleService;
 
     @Operation(summary = "条件分页查询用户列表")
     @GetMapping("/page")
@@ -77,6 +83,8 @@ public class UserController {
             return ServerResponse.errorMsg("用户不存在");
         }
         UserVO vo = DtoEntityUtil.trans(user, UserVO.class);
+        String tenantId = UserContext.getTenantId();
+        userDetailAssembleService.fillAssociations(List.of(vo), tenantId);
         return ServerResponse.successData(vo);
     }
 
@@ -89,5 +97,12 @@ public class UserController {
         return ServerResponse.successMsg("重置密码成功");
     }
 
+    @Operation(summary = "更新用户名")
+    @PostMapping("/username/update")
+    @RequirePermission(PERM_PREFIX + "updateUsername")
+    public ServerResponse<Void> updateUsername(@RequestParam Long userId, @RequestParam String username) {
+        userService.updateUsername(userId, username);
+        return ServerResponse.successMsg("修改成功");
+    }
 
 }

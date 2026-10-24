@@ -24,6 +24,7 @@ public class ClientDTO {
     @Schema(description = "主键")
     private Long id;
 
+    @NotNull(message = "{required}", groups = {ValidationGroups.Insert.class})
     @Range(min = 0, max = 2)
     @Schema(description = "类型 0内部系统 1业务系统 2外部系统")
     private Integer category;

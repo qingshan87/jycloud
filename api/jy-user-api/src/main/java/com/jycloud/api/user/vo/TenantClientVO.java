@@ -3,6 +3,8 @@ package com.jycloud.api.user.vo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * 租户绑定的应用信息 VO
  *
@@ -42,4 +44,7 @@ public class TenantClientVO {
 
     @Schema(description = "应用状态 0禁用 1启用")
     private Integer clientStatus;
+
+    @Schema(description = "应用的菜单列表")
+    private List<MenuVO> menuList;
 }

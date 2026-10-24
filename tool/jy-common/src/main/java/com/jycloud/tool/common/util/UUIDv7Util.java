@@ -1,9 +1,8 @@
 package com.jycloud.tool.common.util;
 
 import com.fasterxml.uuid.Generators;
-import lombok.experimental.UtilityClass;
-import com.fasterxml.uuid.EthernetAddress;
 import com.fasterxml.uuid.impl.TimeBasedEpochGenerator;
+import lombok.experimental.UtilityClass;
 
 
 @UtilityClass

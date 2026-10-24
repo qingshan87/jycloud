@@ -8,6 +8,9 @@ import com.jycloud.api.user.dto.RoleQueryDTO;
 import com.jycloud.api.user.entity.Role;
 import com.jycloud.api.user.vo.RoleVO;
 
+import java.util.List;
+import java.util.Set;
+
 /**
  * <p>
  * 角色表 服务类
@@ -57,6 +60,15 @@ public interface RoleService extends IService<Role> {
      * @return 分页结果
      */
     IPage<RoleVO> pageByCondition(RoleQueryDTO queryDTO);
+
+    /**
+     * 根据租户ID查询角色列表,不包含内置角色super_admin
+     *
+     * @param tenantId 租户ID
+     * @param readonly 是否是内置角色, 不传查询租户所有角色
+     * @return 角色列表
+     */
+    List<RoleVO> listByTenantId(String tenantId, Integer readonly);
 
     /**
      * 删除角色（内置角色不允许删除）

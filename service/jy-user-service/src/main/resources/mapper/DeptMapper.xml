@@ -25,4 +25,11 @@
         dept_id, parent_id, dept_name, sort, remark, status, tenant_id, create_uid, create_time, update_uid, update_time, delete_flag, delete_time, delete_uid
     </sql>
 
+    <!-- 逻辑删除部门 -->
+    <update id="deleteById">
+        UPDATE t_dept
+        SET delete_flag = 1, delete_time = NOW(), delete_uid = #{deleteUid}
+        WHERE dept_id = #{deptId} AND delete_flag = 0
+    </update>
+
 </mapper>

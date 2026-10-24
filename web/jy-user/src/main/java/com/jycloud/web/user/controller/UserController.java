@@ -1,7 +1,9 @@
 package com.jycloud.web.user.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jycloud.api.user.dto.PasswordDTO;
 import com.jycloud.api.user.dto.UserDTO;
+import com.jycloud.api.user.dto.UserProfileDTO;
 import com.jycloud.api.user.dto.UserQueryDTO;
 import com.jycloud.api.user.entity.User;
 import com.jycloud.api.user.vo.MenuVO;
@@ -46,6 +48,22 @@ public class UserController {
     private final UserDetailAssembleService userDetailAssembleService;
     private final UserClientAssembleService userClientAssembleService;
 
+    @Operation(summary = "修改密码（当前登录用户）")
+    @PostMapping("/password/update")
+    public ServerResponse<Void> updatePassword(@Validated @RequestBody PasswordDTO dto) {
+        userService.updatePassword(dto.getOldPassword(), dto.getNewPassword());
+        return ServerResponse.successMsg("修改成功");
+    }
+
+    @Operation(summary = "编辑个人信息（当前登录用户）")
+    @PostMapping("/profile/update")
+    public ServerResponse<UserVO> updateProfile(@Validated @RequestBody UserProfileDTO dto) {
+        User user = DtoEntityUtil.trans(dto, User.class);
+        User result = userService.updateProfile(user);
+        UserVO vo = DtoEntityUtil.trans(result, UserVO.class);
+        return ServerResponse.successData(vo);
+    }
+
     @Operation(summary = "获取我的应用列表")
     @GetMapping("/apps")
     public ServerResponse<List<UserClientVO>> getMyApps() {
@@ -65,9 +83,16 @@ public class UserController {
         return ServerResponse.successData(menuList);
     }
 
-    @Operation(summary = "根据ID查询用户")
-    @GetMapping("/{userId}")
-    public ServerResponse<UserVO> getById(@PathVariable Long userId) {
+    @Operation(summary = "根据ID查询用户，不传ID时查询当前登录用户")
+    @GetMapping(value = {"", "/{userId}"})
+    public ServerResponse<UserVO> getById(@PathVariable(required = false) Long userId) {
+        if (userId == null) {
+            String currentUserId = UserContext.getUserId();
+            if (currentUserId == null) {
+                return ServerResponse.errorMsg("用户ID不能为空");
+            }
+            userId = Long.valueOf(currentUserId);
+        }
         User user = userService.getUserById(userId);
         if (user == null) {
             return ServerResponse.errorMsg("用户不存在");

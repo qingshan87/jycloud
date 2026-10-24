@@ -1,10 +1,13 @@
 package com.jycloud.gateway.filter;
 
+import com.jycloud.tool.cache.helper.RedisCacheHelper;
 import com.jycloud.tool.common.api.ResponseCode;
 import com.jycloud.tool.common.constant.TokenConstant;
 import com.jycloud.tool.common.exception.SysException;
 import com.jycloud.tool.common.util.JWTUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -15,9 +18,14 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static com.jycloud.api.user.constant.UcConstant.USER_TOKEN_CACHE_PREFIX;
+
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class AuthGlobalFilter implements GlobalFilter, Ordered {
+
+    private final RedisCacheHelper cacheHelper;
 
     // 固定业务白名单
     private static final List<String> WHITE_LIST = List.of(
@@ -59,6 +67,10 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
         String userId = JWTUtil.getUserId(decryptedToken);
         String username = JWTUtil.getUsername(decryptedToken);
         String tenantId = JWTUtil.getTenantId(decryptedToken);
+        if (isTokenExpired(userId, token)) {
+            log.warn("拦截过期令牌请求: {}", path);
+            throw new SysException(ResponseCode.UNAUTHORIZED);
+        }
 
         // 透传租户/用户头（原有逻辑保持不变）
         ServerWebExchange mutated = exchange.mutate()
@@ -73,5 +85,15 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     @Override
     public int getOrder() {
         return -100;
+    }
+
+    // 验证用户token是否过期
+    private boolean isTokenExpired(String userId, String token) {
+        if (StringUtils.isBlank(userId) || StringUtils.isBlank(token)) {
+            return true;
+        }
+        String key = USER_TOKEN_CACHE_PREFIX + userId;
+        String cachedToken = this.cacheHelper.get(key);
+        return !token.equals(cachedToken);
     }
 }
