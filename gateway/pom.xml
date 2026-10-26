@@ -13,36 +13,41 @@
     <packaging>jar</packaging>
 
     <dependencies>
+        <!-- Spring Cloud Gateway 5（WebFlux） -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-gateway</artifactId>
+            <artifactId>spring-cloud-starter-gateway-server-webflux</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-loadbalancer</artifactId>
         </dependency>
 
+        <!-- 服务发现 -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
+
+        <!-- Token 会话校验使用 Redis -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
-        <!-- ✅ Knife4j Gateway 聚合 -->
+        <!-- 文档聚合 -->
         <dependency>
-            <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-gateway-spring-boot-starter</artifactId>
+            <groupId>com.baizhukui</groupId>
+            <artifactId>knife4j-gateway-boot4-spring-boot-starter</artifactId>
         </dependency>
 
+        <!-- Lock/session 等 Redis 操作需要 Lettuce 连接池 -->
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
         </dependency>
 
+        <!-- 公共错误响应、JWT 与常量 -->
         <dependency>
             <groupId>com.jycloud</groupId>
             <artifactId>jy-common</artifactId>
@@ -51,15 +56,12 @@
             <groupId>com.jycloud</groupId>
             <artifactId>jy-cache</artifactId>
         </dependency>
+
+        <!-- 仅使用用户 API 常量；排除持久层和注解模块避免污染 WebFlux -->
         <dependency>
             <groupId>com.jycloud</groupId>
             <artifactId>jy-user-api</artifactId>
-            <version>${project.version}</version>
             <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.cloud</groupId>
-                    <artifactId>spring-cloud-starter-openfeign</artifactId>
-                </exclusion>
                 <exclusion>
                     <groupId>io.swagger.core.v3</groupId>
                     <artifactId>swagger-annotations-jakarta</artifactId>
@@ -70,7 +72,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
     </dependencies>
     <build>
         <plugins>

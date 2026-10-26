@@ -6,23 +6,33 @@ JYCloud SaaS 版微服务平台：多租户隔离、模块化微服务架构。�
 
 | 类别 | 技术 | 版本 |
 |---|---|---|
-| 基础框架 | Spring Boot | 3.2.5 |
-| 微服务 | Spring Cloud | 2023.0.1 |
-| 微服务组件 | Spring Cloud Alibaba | 2023.0.1.2 |
-| 注册中心 | Nacos（服务注册发现） | 2.x |
-| 网关 | Spring Cloud Gateway（WebFlux / Netty） | — |
-| ORM | MyBatis-Plus（含 jsqlparser 4.9 多租户 SQL 解析） | 3.5.9 |
+| 基础框架 | Spring Boot | 4.1.1 |
+| 微服务 | Spring Cloud | 2025.1.2 |
+| 微服务组件 | Spring Cloud Alibaba | 2025.1.0.0 |
+| 注册中心 | Nacos（服务注册发现） | 3.x |
+| 网关 | Spring Cloud Gateway Server WebFlux / Netty | 5.x |
+| ORM | MyBatis-Plus（含 jsqlparser 多租户 SQL 解析） | 3.5.17 |
 | 数据库 | MySQL | 8.x |
-| 数据源 | dynamic-datasource / Druid（可选，provided 依赖） | 4.3.0 / 1.2.20 |
+| 数据源 | dynamic-datasource / Druid（可选，provided 依赖） | 4.5.0 / 1.2.28 |
 | 缓存 | Redis（Lettuce + Commons Pool2） | — |
-| JSON | Fastjson2（含 Spring6 / Redis 扩展） | 2.0.53 |
-| API 文档 | Knife4j（Gateway 聚合模式） | 4.5.0 |
-| JWT | java-jwt（Auth0） | 4.4.0 |
+| JSON | Fastjson2（含 Spring 6/7 / Redis 扩展） | 2.0.65 |
+| API 文档 | Knife4j Next（Gateway 聚合模式） | 5.4.0 |
+| JWT | java-jwt（Auth0） | 4.5.2 |
 | 微信小程序 | weixin-java-miniapp（支持多小程序配置） | 4.7.0 |
-| IP 归属 | ip2region | 2.7.0 |
+| IP 归属 | ip2region | 3.3.7 |
 | 线程上下文 | transmittable-thread-local | 2.14.5 |
-| Java | JDK 17+ | — |
+| Java | JDK 21 | — |
 | 构建 | Maven 多模块 | — |
+
+## 依赖管理约定
+
+- 根 `pom.xml` 只集中管理版本，并全局提供 `Lombok` 与 `spring-boot-starter-test`。
+- `jy-common` 导出 Swagger、Jackson、Validation、Fastjson2、JWT、`BaseEntity/TenantEntity`
+  及 `mybatis-plus-annotation`；只引入 MyBatis 核心，不包含 Starter、数据源或 Mapper 自动配置。
+- `jy-mybatis-plus` 导出持久层实现和 `jy-common`；MySQL 驱动、Druid、动态数据源由应用运行时提供。
+- `jy-http-client`、`jy-log-client` 的 Servlet/WebMVC 依赖保持 `provided`，不向 WebFlux Gateway 传递。
+- `web/pom.xml` 统一提供三个 Servlet 应用共用的 Web、Nacos、LoadBalancer、Knife4j、MySQL、日志与 HTTP 客户端依赖。
+- 业务子模块只声明自身独有的 Service/API 依赖，内部模块版本统一由根 POM 管理。
 
 ## 项目结构
 
@@ -36,10 +46,12 @@ jycloud/
 │   ├── handler/GatewayExceptionHandler.java
 │   └── controller/DiscoveryClientController.java
 │
-├── api/                           # 跨服务共享契约（Feign + 实体 + DTO/VO + 常量）
-│   └── jy-user-api/
-│       ├── entity/  dto/  vo/  constant/
-│       └── feign/UserAuthorityFeign.java    # Feign 接口（web/jy-user 提供 Provider 实现）
+├── api/                           # 跨服务共享契约（HttpExchange + 实体 + DTO/VO + 常量）
+│   ├── jy-log-client/             # 四类日志注解、切面、异步写入与错误捕获
+│   ├── jy-user-api/
+│   │   ├── entity/  dto/  vo/  constant/
+│   │   └── client/UserAuthorityClient.java  # HttpExchange 接口（由 RestClient 动态代理）
+│   └── jy-user-permission/        # 业务服务远程权限桥接（PermissionProvider / RoleProvider）
 │
 ├── service/                       # 服务层（业务逻辑库，打包进 web 应用运行）
 │   ├── jy-user-service/           # 核心业务库：用户/角色/菜单/部门/租户/Client/字典/区域等
@@ -53,7 +65,7 @@ jycloud/
 │
 ├── tool/                          # 技术基础模块（各服务共用）
 │   ├── jy-common/                 # 通用：ServerResponse/ResponseCode、SysException、JWTUtil、UserContext、工具类
-│   ├── jy-feign/                  # Feign 拦截器（透传 Token 与用户/租户上下文头）
+│   ├── jy-http-client/            # REST HTTP 客户端拦截器（透传 Token 与用户/租户上下文头）
 │   ├── jy-mybatis-plus/           # BaseEntity/TenantEntity、MP 自动配置（多租户插件、分页等）
 │   ├── jy-cache/                  # Redis 封装（RedisTemplate 配置 + RedisCacheHelper）
 │   ├── jy-permission/             # 权限控制（@RequirePermission / @RequireRole + AOP + SPI）
@@ -63,7 +75,8 @@ jycloud/
     ├── jy_cloud.sql               # 全量库表结构 + 基础数据
     ├── setting_menu.sql           # 设置平台菜单（perms）
     ├── ucenter_menu.sql           # 用户中心菜单（perms）
-    └── init_t_client.sql          # 业务系统（Client）初始数据
+    ├── init_t_client.sql          # 业务系统（Client）初始数据
+    └── log.sql                    # 登录/操作/API/错误日志表
 ```
 
 ## 架构总览
@@ -116,7 +129,7 @@ graph TD
 | **gateway** | 网关（9000） | 路由（/jy-user、/jy-setting、/jy-ucenter）、Token 认证（白名单 + 文档自动放行）、用户/租户头透传、TraceId、CORS、Knife4j 文档聚合 |
 | **jy-user-service** | 服务库 | 核心业务逻辑：用户、角色、菜单、部门、租户、业务系统（Client/版本）、字典、区域、数据权限、用户↔租户/部门/Client 绑定等；含 Assemble 聚合与 Redis 缓存 |
 | **jy-auth-service** | 服务库 | 认证授权策略：账号密码、微信小程序、unionid、token 授权、切换租户；Token 签发与会话管理 |
-| **jy-user** | 应用（6001） | 登录/登出、个人资料、修改密码、我的应用列表、用户路由菜单、用户查询；对外提供 Feign Provider（如权限/用户查询） |
+| **jy-user** | 应用（6001） | 登录/登出、个人资料、修改密码、我的应用列表、用户路由菜单、用户查询；对外提供内部 HTTP 权限接口 |
 | **jy-setting** | 应用（6002） | 设置平台：租户管理、业务系统 Client 与版本、租户-业务系统绑定、用户-租户、字典、区域、用户/角色/菜单管理 |
 | **jy-ucenter** | 应用（6003） | 用户中心：用户/角色/菜单/部门管理、用户权限绑定（角色、直接分配菜单）、数据权限、用户-部门、用户-租户 |
 
@@ -195,6 +208,21 @@ t_user ──→ t_user_authority ──→ category=0 → t_role → t_role_men
 
 用户可同时通过**角色继承**和**直接分配菜单**两种方式获得权限标识；角色/权限标识集合在 Redis 中按（userId + tenantId）缓存，数据变更后失效重建。
 
+## 服务间通信
+
+服务间接口统一使用 Spring `@HttpExchange` 声明，并通过 `RestClient + HttpServiceProxyFactory` 生成客户端代理。`@LoadBalanced RestClient.Builder` 负责按 Nacos 服务名解析实例，`UserContextRequestInterceptor` 负责透传 Token、租户、应用、项目与链路追踪请求头。
+
+用户权限客户端默认访问 `http://jy-user`，可按环境覆盖：
+
+```yaml
+jy:
+  user-authority:
+    client:
+      base-url: http://jy-user
+      connect-timeout: 5s
+      read-timeout: 30s
+```
+
 ## 多租户
 
 - 用户可关联**多个租户**（`t_user_tenant`，支持默认租户），登录或切换租户（`switch_tenant`）后确定当前租户；
@@ -207,11 +235,11 @@ t_user ──→ t_user_authority ──→ category=0 → t_role → t_role_men
 
 ### 环境要求
 
-- JDK 17+（源码编译级别 17）
+- JDK 21（源码编译级别 21）
 - Maven 3.8+
 - MySQL 8.x
 - Redis 6+
-- Nacos 2.x
+- Nacos 3.x
 
 ### 数据库初始化
 
@@ -236,6 +264,11 @@ mvn clean install
 # 仅构建某个应用及其依赖
 mvn clean install -pl web/jy-user -am
 ```
+
+> Spring Boot 4 升级说明：本项目已切换到 Spring Cloud Gateway 5 的
+> `spring-cloud-starter-gateway-server-webflux` 依赖，并将网关路由配置前缀调整为
+> `spring.cloud.gateway.server.webflux.routes`。旧的 `spring.cloud.gateway.routes`
+> 在新版本中不会加载网关路由。
 
 ### 启动
 
@@ -273,7 +306,7 @@ graph TD
     COM["jy-common"]
     MP["jy-mybatis-plus"]
     PERM["jy-permission"]
-    FEIGN["jy-feign"]
+    HTTP["jy-http-client"]
     CACHE["jy-cache"]
     API["jy-user-api"]
     USERSVC["jy-user-service"]
@@ -283,7 +316,7 @@ graph TD
         COM
         MP
         PERM
-        FEIGN
+        HTTP
         CACHE
     end
 
@@ -306,7 +339,7 @@ graph TD
 
     MP --> COM
     PERM --> COM
-    FEIGN --> COM
+    HTTP --> COM
     API --> MP
     API --> COM
 
@@ -317,11 +350,11 @@ graph TD
 
     WU --> AUTHSVC
     WU --> USERSVC
-    WU --> FEIGN
+    WU --> HTTP
     WS --> USERSVC
-    WS --> FEIGN
+    WS --> HTTP
     WC --> USERSVC
-    WC --> FEIGN
+    WC --> HTTP
 
     GW --> COM
     GW --> CACHE

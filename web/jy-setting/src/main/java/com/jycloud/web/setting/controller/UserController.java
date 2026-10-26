@@ -1,6 +1,7 @@
 package com.jycloud.web.setting.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jycloud.api.log.annotation.Log;
 import com.jycloud.api.user.dto.InviteUserQueryDTO;
 import com.jycloud.api.user.dto.UserDTO;
 import com.jycloud.api.user.dto.UserQueryDTO;
@@ -38,6 +39,7 @@ public class UserController {
     private final UserService userService;
 
     @Operation(summary = "新增用户")
+    @Log("新增用户")
     @PostMapping("/create")
     @RequirePermission(PERM_PREFIX + "create")
     public ServerResponse<UserVO> create(@Validated(ValidationGroups.Insert.class) @RequestBody UserDTO dto) {
@@ -50,6 +52,7 @@ public class UserController {
     }
 
     @Operation(summary = "修改用户")
+    @Log("修改用户")
     @PostMapping("/update")
     @RequirePermission(PERM_PREFIX + "update")
     public ServerResponse<UserVO> update(@Validated(ValidationGroups.Update.class) @RequestBody UserDTO dto) {
@@ -91,6 +94,7 @@ public class UserController {
     }
 
     @Operation(summary = "删除用户")
+    @Log("删除用户")
     @PostMapping("/delete/{userId}")
     @RequirePermission(PERM_PREFIX + "delete")
     public ServerResponse<Void> delete(@PathVariable Long userId) {
@@ -99,6 +103,7 @@ public class UserController {
     }
 
     @Operation(summary = "重置密码")
+    @Log("重置用户密码")
     @PostMapping("/password/reset")
     @RequirePermission(PERM_PREFIX + "resetPassword")
     public ServerResponse<Void> resetPassword(@RequestParam("userIds") List<Long> userIds) {

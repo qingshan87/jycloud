@@ -9,7 +9,7 @@ import java.util.Set;
  * 各微服务根据自身情况实现：
  * <ul>
  *   <li>jy-ucenter：直接查本地 DB（t_user_authority → t_role_menu → menu.perms）</li>
- *   <li>jy-business：通过 Feign 远程调用 jy-user</li>
+ *   <li>jy-business：通过 HttpExchange 声明式 HTTP 客户端远程调用 jy-user</li>
  * </ul>
  * </p>
  *

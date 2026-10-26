@@ -12,23 +12,31 @@
     <artifactId>jy-user-service</artifactId>
 
     <dependencies>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
-
+        <!-- 用户共享契约、实体与 Mapper -->
         <dependency>
             <groupId>com.jycloud</groupId>
             <artifactId>jy-user-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
+        <!-- 日志实体与写入服务端实现 -->
+        <dependency>
+            <groupId>com.jycloud</groupId>
+            <artifactId>jy-log-client</artifactId>
+        </dependency>
+
+        <!-- 服务层实际使用 Mapper、分页和多租户插件 -->
+        <dependency>
+            <groupId>com.jycloud</groupId>
+            <artifactId>jy-mybatis-plus</artifactId>
+        </dependency>
+
+        <!-- Redis 缓存 -->
         <dependency>
             <groupId>com.jycloud</groupId>
             <artifactId>jy-cache</artifactId>
         </dependency>
 
+        <!-- 权限 Provider 与本地鉴权基础设施 -->
         <dependency>
             <groupId>com.jycloud</groupId>
             <artifactId>jy-permission</artifactId>

@@ -13,17 +13,20 @@
     <packaging>jar</packaging>
 
     <dependencies>
-        <!-- ========== Spring 框架（编译期，运行期由主模块提供） ========== -->
+        <!-- Servlet MVC 仅用于公共配置编译；provided 不向 Gateway 等 WebFlux 模块传递 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <!-- Validation API 与校验异常处理是公共契约的一部分，需向业务模块传递 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
-        <!-- ========== JSON 序列化 ========== -->
+
+        <!-- Fastjson2：统一 JSON 序列化入口 -->
         <dependency>
             <groupId>com.alibaba.fastjson2</groupId>
             <artifactId>fastjson2</artifactId>
@@ -33,19 +36,34 @@
             <artifactId>fastjson2-extension-spring6</artifactId>
         </dependency>
 
-        <!-- ========== 安全 ========== -->
+        <!-- JWT -->
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
-            <version>4.4.0</version>
         </dependency>
 
-        <!-- ========== 工具类 ========== -->
+        <!-- DTO/实体通用注解：向 API 与业务模块传递 -->
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations-jakarta</artifactId>
-            <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+
+        <!-- 共享实体基类使用 MyBatis-Plus 注解；不引入 Starter、数据源或自动配置 -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-annotation</artifactId>
+        </dependency>
+        <!-- TableField 的 JdbcType/TypeHandler 被 JSON 反射解析时需要 MyBatis 核心类型 -->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+        </dependency>
+
+        <!-- 线程上下文与通用工具 -->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>transmittable-thread-local</artifactId>
@@ -53,23 +71,14 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.14.0</version>
         </dependency>
         <dependency>
             <groupId>org.lionsoul</groupId>
             <artifactId>ip2region</artifactId>
-            <version>2.7.0</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.uuid</groupId>
             <artifactId>java-uuid-generator</artifactId>
-            <version>5.1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
         </dependency>
     </dependencies>
 </project>

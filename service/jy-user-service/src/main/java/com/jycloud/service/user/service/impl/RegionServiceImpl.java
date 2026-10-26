@@ -3,7 +3,7 @@ package com.jycloud.service.user.service.impl;
 import com.jycloud.api.user.entity.Region;
 import com.jycloud.service.user.repository.mapper.RegionMapper;
 import com.jycloud.service.user.service.RegionService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 /**

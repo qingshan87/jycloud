@@ -6,9 +6,9 @@ import lombok.Setter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.lang.Nullable;
-import org.springframework.util.ObjectUtils;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -60,7 +60,7 @@ public class ServerResponse<T> implements Serializable {
      */
     public static boolean isSuccess(@Nullable ServerResponse<?> result) {
         return Optional.ofNullable(result)
-                .map(x -> ObjectUtils.nullSafeEquals(ResponseCode.SUCCESS.getCode(), x.code))
+                .map(x -> Objects.equals(ResponseCode.SUCCESS.getCode(), x.code))
                 .orElse(Boolean.FALSE);
     }
 

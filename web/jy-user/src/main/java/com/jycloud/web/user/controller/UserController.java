@@ -1,6 +1,7 @@
 package com.jycloud.web.user.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jycloud.api.log.annotation.Log;
 import com.jycloud.api.user.dto.PasswordDTO;
 import com.jycloud.api.user.dto.UserDTO;
 import com.jycloud.api.user.dto.UserProfileDTO;
@@ -48,6 +49,7 @@ public class UserController {
     private final UserDetailAssembleService userDetailAssembleService;
     private final UserClientAssembleService userClientAssembleService;
 
+    @Log("修改密码")
     @Operation(summary = "修改密码（当前登录用户）")
     @PostMapping("/password/update")
     public ServerResponse<Void> updatePassword(@Validated @RequestBody PasswordDTO dto) {
@@ -56,6 +58,7 @@ public class UserController {
     }
 
     @Operation(summary = "编辑个人信息（当前登录用户）")
+    @Log("编辑个人资料")
     @PostMapping("/profile/update")
     public ServerResponse<UserVO> updateProfile(@Validated @RequestBody UserProfileDTO dto) {
         User user = DtoEntityUtil.trans(dto, User.class);

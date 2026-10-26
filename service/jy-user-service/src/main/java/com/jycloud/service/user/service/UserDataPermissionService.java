@@ -1,7 +1,7 @@
 package com.jycloud.service.user.service;
 
 import com.jycloud.api.user.entity.UserDataPermission;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.spring.service.IService;
 
 /**
  * <p>

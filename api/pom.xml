@@ -12,7 +12,9 @@
     <artifactId>api</artifactId>
     <packaging>pom</packaging>
     <modules>
+        <module>jy-log-client</module>
         <module>jy-user-api</module>
+        <module>jy-user-permission</module>
     </modules>
 
 </project>

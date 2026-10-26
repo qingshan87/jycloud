@@ -6,131 +6,177 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.lionsoul.ip2region.xdb.Searcher;
+import org.lionsoul.ip2region.service.Config;
+import org.lionsoul.ip2region.service.ConfigBuilder;
+import org.lionsoul.ip2region.service.Ip2Region;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * IP 地址查询工具类（ip2region 2.7.0 专用版）
+ * IP 地址查询工具类（基于 ip2region 3.3.x，当前启用 IPv4）。
  */
 @Slf4j
 @Component
 public class AddressUtil {
 
-    /**
-     * 缓存策略（2.7.0 仅支持这三种，无 Version 参数）
-     */
-    public enum CachePolicy {
-        FILE_ONLY,           // 基于文件，每次查询有磁盘 IO
-        VECTOR_INDEX,        // 缓存 512KB 向量索引，推荐
-        FULL_CONTENT         // 全内存缓存，查询最快但占用 ~10MB
-    }
+    private static final String CLASSPATH_PREFIX = "classpath:";
 
-    private Searcher searcher;
+    private volatile Ip2Region ip2Region;
+
     private final Ip2RegionProperties ip2RegionProperties;
-    private final CachePolicy cachePolicy;
 
     public AddressUtil(Ip2RegionProperties ip2RegionProperties) {
         this.ip2RegionProperties = ip2RegionProperties;
-        this.cachePolicy = CachePolicy.VECTOR_INDEX;
     }
 
     @PostConstruct
     public void init() {
+        String path = ip2RegionProperties.getPath();
+        if (StringUtils.isBlank(path)) {
+            log.warn("sys.ip2region.path is empty, IP region query disabled");
+            return;
+        }
         try {
-            String dbPath = resolveDbPath(ip2RegionProperties.getPath());
-            if (StringUtils.isBlank(dbPath)) {
-                log.error("ip2region db path is empty");
-                return;
-            }
-
-            // 文件预检（无 verifyFromFile，手动检查）
-            File dbFile = new File(dbPath);
-            if (!dbFile.exists() || !dbFile.canRead() || dbFile.length() == 0) {
-                log.error("ip2region db file invalid: {}", dbPath);
-                return;
-            }
-
-            // 创建 Searcher（注意：方法签名无 Version 参数！）
-            this.searcher = createSearcher270(dbPath, cachePolicy);
-            log.info("ip2region 2.7.0 initialized, policy={}, path={}, size={}KB",
-                    cachePolicy, dbPath, dbFile.length() / 1024);
-
-        } catch (IOException e) {
-            log.error("init ip2region failed", e);
-            throw new RuntimeException("Failed to initialize ip2region", e);
+            this.ip2Region = Ip2Region.create(buildV4Config(path), null);
+            log.info("ip2region initialized, xdb={}", path);
+        } catch (Exception e) {
+            log.error("init ip2region failed, IP region query disabled, xdb={}", path, e);
         }
     }
 
-    /**
-     * 2.7.0 专用：创建 Searcher（无 Version 参数）
-     */
-    private Searcher createSearcher270(String dbPath, CachePolicy policy) throws IOException {
-        return switch (policy) {
-            case FILE_ONLY ->
-                // 签名：newWithFileOnly(String dbPath)
-                    Searcher.newWithFileOnly(dbPath);
+    private Config buildV4Config(String path) throws Exception {
+        ConfigBuilder builder = Config.custom()
+                .setSearchers(Runtime.getRuntime().availableProcessors() * 2);
 
-            case VECTOR_INDEX -> {
-                // 签名：loadVectorIndexFromFile(String) + newWithVectorIndex(String, byte[])
-                byte[] vIndex = Searcher.loadVectorIndexFromFile(dbPath);
-                yield Searcher.newWithVectorIndex(dbPath, vIndex);
+        if (path.startsWith(CLASSPATH_PREFIX)) {
+            String location = path.substring(CLASSPATH_PREFIX.length());
+            ClassPathResource resource = new ClassPathResource(location);
+            if (!resource.exists()) {
+                throw new FileNotFoundException("ip2region xdb not found in classpath: " + location);
             }
-
-            case FULL_CONTENT -> {
-                // 签名：loadContentFromFile(String) + newWithBuffer(byte[])
-                byte[] cBuff = Searcher.loadContentFromFile(dbPath);
-                yield Searcher.newWithBuffer(cBuff);
+            try (InputStream inputStream = resource.getInputStream()) {
+                return builder.setCachePolicy(Config.BufferCache)
+                        .setXdbInputStream(inputStream)
+                        .asV4();
             }
-        };
-    }
-
-    private String resolveDbPath(String path) throws IOException {
-        if (StringUtils.isBlank(path)) return null;
-        if (path.startsWith("classpath:")) {
-            String resourcePath = path.substring("classpath:".length());
-            ClassPathResource resource = new ClassPathResource(resourcePath);
-            return resource.exists() ? resource.getFile().getAbsolutePath() : null;
         }
+
         File file = new File(path);
-        return file.exists() ? file.getAbsolutePath() : null;
+        if (!file.exists()) {
+            throw new FileNotFoundException("ip2region xdb not found: " + file.getAbsolutePath());
+        }
+        return builder.setCachePolicy(Config.VIndexCache)
+                .setXdbFile(file)
+                .asV4();
     }
 
     @PreDestroy
     public void destroy() {
-        if (searcher != null) {
+        Ip2Region region = this.ip2Region;
+        if (region != null) {
             try {
-                searcher.close();
-                log.info("ip2region searcher closed");
-            } catch (IOException e) {
-                log.warn("close searcher error", e);
+                region.close();
+                log.info("ip2region closed");
+            } catch (Exception e) {
+                log.warn("close ip2region error", e);
             }
         }
     }
 
-    /**
-     * 查询 IP 地域（2.7.0 直接 search，无 Version 区分）
-     */
     public String getRegion(String ip) {
-        if (searcher == null || StringUtils.isBlank(ip)) {
+        if (StringUtils.isBlank(ip)) {
             return StringPool.EMPTY;
         }
+        Ip2Region region = this.ip2Region;
+        if (region == null) {
+            return fallbackLocation(ip);
+        }
         try {
-            String result = searcher.search(ip);
-            return result != null ? result : StringPool.EMPTY;
+            String result = region.search(ip);
+            return formatRegion(ip, result);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.warn("query ip region interrupted, ip={}", ip);
+            return fallbackLocation(ip);
         } catch (Exception e) {
             log.error("query ip region failed, ip={}", ip, e);
-            return StringPool.EMPTY;
+            return fallbackLocation(ip);
         }
     }
 
-    // // ✅ 静态兼容方法（过渡用）
-    // @Deprecated
-    // public static String getRegionStatic(String ip) {
-    //     AddressUtil instance = SpringContextUtil.getBean(AddressUtil.class);
-    //     return instance != null ? instance.getRegion(ip) : StringPool.EMPTY;
-    // }
+    /**
+     * 将 ip2region 的原始管道分隔结果转换为可读地点。
+     */
+    static String formatRegion(String ip, String rawRegion) {
+        if (StringUtils.isBlank(rawRegion)) {
+            return fallbackLocation(ip);
+        }
+        String[] parts = rawRegion.split("\\|");
+        if (isReservedRegion(parts)) {
+            return fallbackLocation(ip);
+        }
+
+        List<String> locationParts = new ArrayList<>();
+        for (String part : parts) {
+            String value = StringUtils.trimToNull(part);
+            if (value == null || "0".equals(value) || StringUtils.equalsIgnoreCase(value, "Reserved")) {
+                continue;
+            }
+            if (locationParts.isEmpty() || !StringUtils.equalsIgnoreCase(locationParts.getLast(), value)) {
+                locationParts.add(value);
+            }
+        }
+        return locationParts.isEmpty() ? fallbackLocation(ip) : String.join(" ", locationParts);
+    }
+
+    private static boolean isReservedRegion(String[] parts) {
+        for (String part : parts) {
+            String value = StringUtils.trimToEmpty(part);
+            if (StringUtils.isNotBlank(value) && !"0".equals(value)
+                    && !StringUtils.equalsIgnoreCase(value, "Reserved")) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static String fallbackLocation(String ip) {
+        return isPrivateAddress(ip) ? "内网地址" : "未知地点";
+    }
+
+    /**
+     * 判断私网、回环、链路本地和常见保留地址。
+     */
+    private static boolean isPrivateAddress(String ip) {
+        try {
+            InetAddress address = InetAddress.getByName(ip);
+            if (address.isAnyLocalAddress() || address.isLoopbackAddress()
+                    || address.isSiteLocalAddress() || address.isLinkLocalAddress()) {
+                return true;
+            }
+            return ip.startsWith("100.") && isCarrierGradeNat(ip);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private static boolean isCarrierGradeNat(String ip) {
+        String[] parts = ip.split("\\.");
+        if (parts.length != 4 || !"100".equals(parts[0])) {
+            return false;
+        }
+        try {
+            int second = Integer.parseInt(parts[1]);
+            return second >= 64 && second <= 127;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
 }

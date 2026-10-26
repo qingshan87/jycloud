@@ -44,7 +44,5 @@ mybatis-plus:
     map-underscore-to-camel-case: true # 驼峰映射（默认 true，显式声明防歧义）
     cache-enabled: false # 分布式环境必须关闭二级缓存
 
-sys:
-  ip2region:
-    path: D:\Developer\tools\ip2region\ip2region_v4.xdb
+
 

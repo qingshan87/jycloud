@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.jycloud</groupId>
+        <artifactId>tool</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>jy-http-client</artifactId>
+
+    <dependencies>
+        <!-- Servlet API 仅编译期使用，Web 应用运行时提供 -->
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- RestClient 与 ClientHttpRequestInterceptor；运行栈由接入方提供 -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- 自动配置注解仅编译期使用 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Token 与用户上下文 -->
+        <dependency>
+            <groupId>com.jycloud</groupId>
+            <artifactId>jy-common</artifactId>
+        </dependency>
+    </dependencies>
+</project>

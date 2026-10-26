@@ -9,7 +9,7 @@ import java.util.Set;
  * 各微服务根据自身情况实现：
  * <ul>
  *   <li>jy-user-service：直接查本地 DB（t_user_authority(category=0) → t_role.role_name）</li>
- *   <li>其他服务：通过 Feign 远程调用</li>
+ *   <li>其他服务：通过 HttpExchange 声明式 HTTP 客户端远程调用</li>
  * </ul>
  * </p>
  *

@@ -5,7 +5,7 @@ spring:
         server-addr: 120.27.143.176:8848
         namespace: df2264cd-17e3-47d4-9dc8-e7e32dedc84e
 
-  # Redis 缓存配置（Spring Boot 3 使用 spring.data.redis 前缀）
+  # Redis 缓存配置
   data:
     redis:
       host: ${REDIS_HOST:120.27.143.176}

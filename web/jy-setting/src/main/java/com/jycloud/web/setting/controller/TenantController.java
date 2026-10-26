@@ -1,6 +1,7 @@
 package com.jycloud.web.setting.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jycloud.api.log.annotation.Log;
 import com.jycloud.api.user.dto.TenantDTO;
 import com.jycloud.api.user.dto.TenantQueryDTO;
 import com.jycloud.api.user.entity.Tenant;
@@ -46,6 +47,7 @@ public class TenantController {
     private final TenantService tenantService;
 
     @Operation(summary = "新增租户")
+    @Log("新增租户")
     @PostMapping("/create")
     @RequirePermission(PERM_PREFIX + "create")
     public ServerResponse<TenantVO> create(@Validated(ValidationGroups.Insert.class) @RequestBody TenantDTO dto) {
@@ -56,6 +58,7 @@ public class TenantController {
     }
 
     @Operation(summary = "修改租户")
+    @Log("修改租户")
     @PostMapping("/update")
     @RequirePermission(PERM_PREFIX + "update")
     public ServerResponse<TenantVO> update(@Validated(ValidationGroups.Update.class) @RequestBody TenantDTO dto) {
@@ -84,6 +87,7 @@ public class TenantController {
     }
 
     @Operation(summary = "删除租户")
+    @Log("删除租户")
     @PostMapping("/delete/{id}")
     @RequirePermission(PERM_PREFIX + "delete")
     public ServerResponse<Void> delete(@PathVariable Long id) {

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jycloud.service.user.repository.mapper.LoginLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jycloud.api.log.entity.LoginLog">
+        <id column="id" property="id" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="user_id" property="userId" />
+        <result column="username" property="username" />
+        <result column="type" property="type" />
+        <result column="grant_type" property="grantType" />
+        <result column="description" property="description" />
+        <result column="login_time" property="loginTime" />
+        <result column="ua" property="ua" />
+        <result column="browser" property="browser" />
+        <result column="browser_version" property="browserVersion" />
+        <result column="operating_system" property="operatingSystem" />
+        <result column="location" property="location" />
+        <result column="ip" property="ip" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, tenant_id, user_id, username, type, grant_type, description, login_time, ua, browser, browser_version, operating_system, location, ip
+    </sql>
+
+</mapper>

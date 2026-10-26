@@ -43,6 +43,11 @@ public class UserContext {
         return user == null ? null : user.getProjectId();
     }
 
+    public static String getTraceId() {
+        LoginVal user = USER_INFO_THREAD_LOCAL.get();
+        return user == null ? null : user.getTraceId();
+    }
+
 
     public static void clear() {
         USER_INFO_THREAD_LOCAL.remove();

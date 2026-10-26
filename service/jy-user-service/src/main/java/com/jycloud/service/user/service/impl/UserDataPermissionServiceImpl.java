@@ -1,7 +1,7 @@
 package com.jycloud.service.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.jycloud.api.user.constant.DataScopeEnum;
 import com.jycloud.api.user.entity.UserDataPermission;
 import com.jycloud.service.user.repository.mapper.UserDataPermissionMapper;

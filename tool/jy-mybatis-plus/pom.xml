@@ -13,24 +13,19 @@
     <packaging>jar</packaging>
 
     <dependencies>
-        <!-- ========== MyBatis-Plus 核心（SB3 专用 Starter） ========== -->
+        <!-- MyBatis-Plus Boot 4 Starter：持久层核心与自动配置 -->
         <dependency>
             <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+            <artifactId>mybatis-plus-spring-boot4-starter</artifactId>
         </dependency>
-        <!-- mybatis-plus-jsqlparser（多租户、分页等扩展类） -->
+
+        <!-- MyBatis-Plus 3.5.9+ 独立分页/多租户解析模块 -->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-jsqlparser</artifactId>
         </dependency>
-        <!-- jsqlparser 4.9（多租户 SQL 解析） -->
-        <dependency>
-            <groupId>com.github.jsqlparser</groupId>
-            <artifactId>jsqlparser</artifactId>
-            <version>4.9</version>
-        </dependency>
 
-        <!-- ========== 数据库驱动 ========== -->
+        <!-- 数据库组件由 Web 应用运行时提供，不在公共库中强制传播 -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
@@ -38,12 +33,12 @@
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
-            <artifactId>druid-spring-boot-starter</artifactId>
+            <artifactId>druid-spring-boot-4-starter</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
-            <artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
+            <artifactId>dynamic-datasource-spring-boot4-starter</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -52,33 +47,17 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- ========== 实体基类注解 ========== -->
-        <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations-jakarta</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-        </dependency>
-
-        <!-- ========== 工具类 ========== -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
+        <!-- 生成配置元数据 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
 
+        <!-- 自动配置、上下文与安全工具；使用 compile scope 保证下游运行时可见 -->
         <dependency>
             <groupId>com.jycloud</groupId>
             <artifactId>jy-common</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 

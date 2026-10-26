@@ -1,6 +1,7 @@
 package com.jycloud.web.setting.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jycloud.api.log.annotation.Log;
 import com.jycloud.api.user.dto.ClientDTO;
 import com.jycloud.api.user.dto.ClientQueryDTO;
 import com.jycloud.api.user.entity.Client;
@@ -43,6 +44,7 @@ public class ClientController {
     private final ClientService clientService;
 
     @Operation(summary = "新增业务系统")
+    @Log("新增业务系统")
     @PostMapping("/create")
     @RequirePermission(PERM_PREFIX + "create")
     public ServerResponse<ClientVO> create(@Validated(ValidationGroups.Insert.class) @RequestBody ClientDTO dto) {
@@ -53,6 +55,7 @@ public class ClientController {
     }
 
     @Operation(summary = "修改业务系统")
+    @Log("修改业务系统")
     @PostMapping("/update")
     @RequirePermission(PERM_PREFIX + "update")
     public ServerResponse<ClientVO> update(@Validated(ValidationGroups.Update.class) @RequestBody ClientDTO dto) {
@@ -81,6 +84,7 @@ public class ClientController {
     }
 
     @Operation(summary = "删除业务系统")
+    @Log("删除业务系统")
     @PostMapping("/delete/{id}")
     @RequirePermission(PERM_PREFIX + "delete")
     public ServerResponse<Void> delete(@PathVariable Long id) {
@@ -89,6 +93,7 @@ public class ClientController {
     }
 
     @Operation(summary = "重置应用秘钥")
+    @Log("重置应用秘钥")
     @PostMapping("/reset-secret/{id}")
     @RequirePermission(PERM_PREFIX + "resetSecret")
     public ServerResponse<Client> resetSecret(@PathVariable Long id) {

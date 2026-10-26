@@ -1,7 +1,7 @@
 package com.jycloud.service.user.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.spring.service.IService;
 import com.jycloud.api.user.constant.AdminRoleNameEnum;
 import com.jycloud.api.user.dto.RoleDTO;
 import com.jycloud.api.user.dto.RoleQueryDTO;

@@ -1,6 +1,6 @@
 package com.jycloud.service.user.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.spring.service.IService;
 import com.jycloud.api.user.entity.Menu;
 import com.jycloud.api.user.vo.MenuVO;
 

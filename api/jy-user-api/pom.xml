@@ -11,31 +11,34 @@
 
     <artifactId>jy-user-api</artifactId>
     <dependencies>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- Feign 接口注解（版本由 spring-cloud-dependencies BOM 管理） -->
+        <!-- HttpExchange 客户端按 Nacos 服务名负载均衡 -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
         </dependency>
 
-        <!-- 在 api 模块中引入纯注解包 -->
+        <!-- RestClient、Servlet 与自动配置 API；运行时由 Web 应用提供 -->
         <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations-jakarta</artifactId>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <scope>provided</scope>
         </dependency>
 
+        <!-- 公共 DTO 注解 -->
         <dependency>
             <groupId>com.jycloud</groupId>
             <artifactId>jy-common</artifactId>
         </dependency>
+
+        <!-- 请求头上下文透传 -->
         <dependency>
             <groupId>com.jycloud</groupId>
-            <artifactId>jy-mybatis-plus</artifactId>
+            <artifactId>jy-http-client</artifactId>
         </dependency>
     </dependencies>
 </project>

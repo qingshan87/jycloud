@@ -17,7 +17,7 @@ spring:
       idle-timeout: 600000
       max-lifetime: 1800000
 
-  # Redis 缓存配置（Spring Boot 3 使用 spring.data.redis 前缀）
+  # Redis 缓存配置
   data:
     redis:
       host: ${REDIS_HOST:120.27.143.176}
@@ -41,3 +41,8 @@ logging:
   file:
     path: D:/Developer/log
 
+sys:
+  ip2region:
+    path: D:\Developer\tools\ip2region\ip2region_v4.xdb
+  log:
+    enabled: true

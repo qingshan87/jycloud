@@ -55,8 +55,6 @@ wx:
         secret: 71a94aa97875f31d416b05be9b44119b
 
 sys:
-  ip2region:
-    path: D:\Developer\tools\ip2region\ip2region_v4.xdb
   tenant:
     enabled: true
     column: tenant_id

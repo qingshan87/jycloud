@@ -1,6 +1,7 @@
 package com.jycloud.web.ucenter.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jycloud.api.log.annotation.Log;
 import com.jycloud.api.user.dto.PasswordDTO;
 import com.jycloud.api.user.dto.UserDTO;
 import com.jycloud.api.user.dto.UserQueryDTO;
@@ -56,6 +57,7 @@ public class UserController {
     }
 
     @Operation(summary = "新增用户")
+    @Log("新增用户")
     @PostMapping("/create")
     @RequirePermission(PERM_PREFIX + "create")
     public ServerResponse<UserVO> create(@Validated(ValidationGroups.Insert.class) @RequestBody UserDTO dto) {
@@ -66,6 +68,7 @@ public class UserController {
     }
 
     @Operation(summary = "修改用户")
+    @Log("修改用户")
     @PostMapping("/update")
     @RequirePermission(PERM_PREFIX + "update")
     public ServerResponse<UserVO> update(@Validated(ValidationGroups.Update.class) @RequestBody UserDTO dto) {
@@ -89,6 +92,7 @@ public class UserController {
     }
 
     @Operation(summary = "重置密码")
+    @Log("重置用户密码")
     @Parameter(name = "userIds", description = "用户ID集合，多个用英文逗号分隔", required = true)
     @PostMapping("/password/reset")
     @RequirePermission(PERM_PREFIX + "resetPassword")
@@ -98,6 +102,7 @@ public class UserController {
     }
 
     @Operation(summary = "更新用户名")
+    @Log("更新用户名")
     @PostMapping("/username/update")
     @RequirePermission(PERM_PREFIX + "updateUsername")
     public ServerResponse<Void> updateUsername(@RequestParam Long userId, @RequestParam String username) {

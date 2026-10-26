@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.jycloud.api.user.entity.RoleMenu;
 import com.jycloud.service.user.repository.mapper.RoleMenuMapper;
 import com.jycloud.service.user.service.RoleMenuService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.jycloud.tool.common.api.ResponseCode;
 import com.jycloud.tool.common.exception.SysException;
 import org.springframework.stereotype.Service;

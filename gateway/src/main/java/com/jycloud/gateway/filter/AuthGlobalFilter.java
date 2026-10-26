@@ -1,9 +1,11 @@
 package com.jycloud.gateway.filter;
 
+import com.alibaba.fastjson2.JSON;
+import com.jycloud.gateway.properties.AuthProperties;
 import com.jycloud.tool.cache.helper.RedisCacheHelper;
 import com.jycloud.tool.common.api.ResponseCode;
+import com.jycloud.tool.common.api.ServerResponse;
 import com.jycloud.tool.common.constant.TokenConstant;
-import com.jycloud.tool.common.exception.SysException;
 import com.jycloud.tool.common.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,11 +13,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
+import org.springframework.core.io.buffer.DataBufferFactory;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 import static com.jycloud.api.user.constant.UcConstant.USER_TOKEN_CACHE_PREFIX;
@@ -25,15 +34,9 @@ import static com.jycloud.api.user.constant.UcConstant.USER_TOKEN_CACHE_PREFIX;
 @RequiredArgsConstructor
 public class AuthGlobalFilter implements GlobalFilter, Ordered {
 
+    private final AuthProperties authProperties;
     private final RedisCacheHelper cacheHelper;
-
-    // 固定业务白名单
-    private static final List<String> WHITE_LIST = List.of(
-            "/jy-user/system/auth/login",
-            "/jy-user/system/auth/register",
-            "/error",
-            "/favicon.ico"
-    );
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     // 文档路径正则规则（支持任意服务名前缀，新增服务无需改代码）
     private static final Pattern DOC_PATTERN = Pattern.compile(
@@ -42,11 +45,20 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        String path = exchange.getRequest().getURI().getPath();
+        if (!authProperties.isEnabled()) {
+            return chain.filter(exchange);
+        }
 
-        // 匹配固定业务白名单
-        if (WHITE_LIST.stream().anyMatch(path::startsWith)) {
-            System.out.println("匹配固定业务白名单: " + path);
+        ServerHttpRequest request = exchange.getRequest();
+        String path = request.getURI().getPath();
+
+        if (HttpMethod.OPTIONS.equals(request.getMethod())) {
+            return chain.filter(exchange);
+        }
+
+        if (authProperties.getWhiteList() != null
+                && authProperties.getWhiteList().stream().anyMatch(pattern -> pathMatcher.match(pattern, path))) {
+            log.debug("匹配认证白名单: {}", path);
             return chain.filter(exchange);
         }
 
@@ -57,29 +69,29 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
         }
 
         // 鉴权逻辑：检查 Token
-        String token = exchange.getRequest().getHeaders().getFirst(TokenConstant.TOKEN);
-        if (token == null || token.isEmpty() || JWTUtil.decryptToken(token) == null) {
-            log.warn("拦截未授权请求: {}", path);
-            throw new SysException(ResponseCode.UNAUTHORIZED);
+        String token = request.getHeaders().getFirst(TokenConstant.TOKEN);
+        if (StringUtils.isBlank(token)) {
+            log.warn("拦截未授权请求(缺少令牌): {}", path);
+            return writeUnauthorized(exchange, ResponseCode.UNAUTHORIZED.getMessage());
         }
 
         String decryptedToken = JWTUtil.decryptToken(token);
-        String userId = JWTUtil.getUserId(decryptedToken);
-        String username = JWTUtil.getUsername(decryptedToken);
-        String tenantId = JWTUtil.getTenantId(decryptedToken);
-        if (isTokenExpired(userId, token)) {
-            log.warn("拦截过期令牌请求: {}", path);
-            throw new SysException(ResponseCode.UNAUTHORIZED);
+        if (StringUtils.isBlank(decryptedToken)) {
+            log.warn("拦截非法令牌请求: {}", path);
+            return writeUnauthorized(exchange, "非法令牌，请重新登录");
         }
 
-        // 透传租户/用户头（原有逻辑保持不变）
-        ServerWebExchange mutated = exchange.mutate()
-                .request(r -> r.header("X-User-ID", userId))
-                .request(r -> r.header("X-Username", username))
-                .request(r -> r.header("X-Tenant-ID", tenantId != null ? tenantId : "0"))
-                .build();
+        String userId = JWTUtil.getUserId(decryptedToken);
+        if (StringUtils.isBlank(userId)) {
+            log.warn("拦截缺少用户信息的令牌请求: {}", path);
+            return writeUnauthorized(exchange, "令牌用户信息无效，请重新登录");
+        }
+        if (isTokenExpired(userId, token)) {
+            log.warn("拦截过期或失效令牌请求: {}", path);
+            return writeUnauthorized(exchange, "令牌已失效，请重新登录");
+        }
 
-        return chain.filter(mutated);
+        return chain.filter(exchange);
     }
 
     @Override
@@ -87,13 +99,45 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
         return -100;
     }
 
-    // 验证用户token是否过期
-    private boolean isTokenExpired(String userId, String token) {
-        if (StringUtils.isBlank(userId) || StringUtils.isBlank(token)) {
+    private boolean isTokenExpired(String userId, String encryptedToken) {
+        if (StringUtils.isBlank(userId) || StringUtils.isBlank(encryptedToken)) {
             return true;
         }
         String key = USER_TOKEN_CACHE_PREFIX + userId;
-        String cachedToken = this.cacheHelper.get(key);
-        return !token.equals(cachedToken);
+        String cachedToken = normalizeCachedToken(this.cacheHelper.get(key));
+        return !encryptedToken.equals(cachedToken);
+    }
+
+    /**
+     * 兼容旧系统将字符串 JSON 序列化后写入缓存（带首尾双引号）的格式。
+     */
+    private String normalizeCachedToken(String cachedToken) {
+        if (cachedToken == null || cachedToken.length() < 2
+                || cachedToken.charAt(0) != '"'
+                || cachedToken.charAt(cachedToken.length() - 1) != '"') {
+            return cachedToken;
+        }
+        try {
+            Object parsed = JSON.parse(cachedToken);
+            return parsed instanceof String value ? value : cachedToken;
+        } catch (Exception e) {
+            log.warn("缓存 Token 为 JSON 字符串字面量但解析失败，按原值比对");
+            return cachedToken;
+        }
+    }
+
+    private Mono<Void> writeUnauthorized(ServerWebExchange exchange, String message) {
+        ServerHttpResponse response = exchange.getResponse();
+        if (response.isCommitted()) {
+            return Mono.error(new IllegalStateException("响应已提交，无法写入401"));
+        }
+        response.setStatusCode(HttpStatus.UNAUTHORIZED);
+        response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+        String body = JSON.toJSONString(
+                ServerResponse.errorCodeMsg(ResponseCode.UNAUTHORIZED.getCode(), message));
+        return response.writeWith(Mono.fromSupplier(() -> {
+            DataBufferFactory bufferFactory = response.bufferFactory();
+            return bufferFactory.wrap(body.getBytes(StandardCharsets.UTF_8));
+        }));
     }
 }

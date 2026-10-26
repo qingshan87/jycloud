@@ -1,7 +1,7 @@
 package com.jycloud.service.user.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.spring.service.IService;
 import com.jycloud.api.user.dto.TenantQueryDTO;
 import com.jycloud.api.user.entity.Tenant;
 import com.jycloud.api.user.vo.TenantVO;

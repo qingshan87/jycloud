@@ -8,25 +8,27 @@ spring:
     name: jy-gateway
   cloud:
     gateway:
-      routes:
-        - id: jy-user
-          uri: lb://jy-user
-          predicates:
-            - Path=/jy-user/**
-          filters:
-            - StripPrefix=1
-        - id: jy-setting
-          uri: lb://jy-setting
-          predicates:
-            - Path=/jy-setting/**
-          filters:
-            - StripPrefix=1
-        - id: jy-ucenter
-          uri: lb://jy-ucenter
-          predicates:
-            - Path=/jy-ucenter/**
-          filters:
-            - StripPrefix=1
+      server:
+        webflux:
+          routes:
+            - id: jy-user
+              uri: lb://jy-user
+              predicates:
+                - Path=/jy-user/**
+              filters:
+                - StripPrefix=1
+            - id: jy-setting
+              uri: lb://jy-setting
+              predicates:
+                - Path=/jy-setting/**
+              filters:
+                - StripPrefix=1
+            - id: jy-ucenter
+              uri: lb://jy-ucenter
+              predicates:
+                - Path=/jy-ucenter/**
+              filters:
+                - StripPrefix=1
 
 logging:
   level:
@@ -34,6 +36,15 @@ logging:
     org.springframework.cloud.gateway: INFO
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n"
+
+sys:
+  auth:
+    enabled: true
+    white-list:
+      - /jy-user/system/auth/login
+      - /jy-user/system/auth/register
+      - /error
+      - /favicon.ico
 
 # ✅ Knife4j 聚合配置
 knife4j:

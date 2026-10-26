@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  * 用于在非 Spring 管理的类中安全获取 Bean 或发布事件
  *
  * @author qingshan
- * @update 2026/05/25 - 适配生产环境规范 + Spring Boot 3.2
+ * @update 2026/10/24 - 适配 Spring Boot 4.1
  */
 @Slf4j
 @Component

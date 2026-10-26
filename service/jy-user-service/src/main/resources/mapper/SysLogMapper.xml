@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jycloud.service.user.repository.mapper.SysLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jycloud.api.log.entity.SysLog">
+        <id column="id" property="id" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="service_id" property="serviceId" />
+        <result column="type" property="type" />
+        <result column="username" property="username" />
+        <result column="ip" property="ip" />
+        <result column="description" property="description" />
+        <result column="class_path" property="classPath" />
+        <result column="action_method" property="actionMethod" />
+        <result column="request_uri" property="requestUri" />
+        <result column="http_method" property="httpMethod" />
+        <result column="params" property="params" />
+        <result column="result" property="result" />
+        <result column="ex_detail" property="exDetail" />
+        <result column="start_time" property="startTime" />
+        <result column="finish_time" property="finishTime" />
+        <result column="consuming_time" property="consumingTime" />
+        <result column="ua" property="ua" />
+        <result column="create_uid" property="createUid" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, tenant_id, service_id, type, username, ip, description, class_path, action_method, request_uri, http_method, params, result, ex_detail, start_time, finish_time, consuming_time, ua, create_uid, create_time
+    </sql>
+
+</mapper>

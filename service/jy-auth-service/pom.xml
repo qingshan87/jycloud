@@ -11,29 +11,17 @@
 
     <artifactId>jy-auth-service</artifactId>
 
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
     <dependencies>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
-
+        <!-- 认证策略复用用户、租户与权限服务 -->
         <dependency>
             <groupId>com.jycloud</groupId>
             <artifactId>jy-user-service</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <!-- 微信小程序 SDK，支持多小程序配置 -->
         <dependency>
             <groupId>com.github.binarywang</groupId>
             <artifactId>weixin-java-miniapp</artifactId>
-            <version>${wx-java.version}</version>
         </dependency>
 
     </dependencies>

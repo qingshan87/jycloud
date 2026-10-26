@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.jycloud</groupId>
+        <artifactId>api</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>jy-log-client</artifactId>
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <!-- 公共契约、JSON、Validation 与 DTO 注解 -->
+        <dependency>
+            <groupId>com.jycloud</groupId>
+            <artifactId>jy-common</artifactId>
+        </dependency>
+
+        <!-- 统一请求头透传 -->
+        <dependency>
+            <groupId>com.jycloud</groupId>
+            <artifactId>jy-http-client</artifactId>
+        </dependency>
+
+        <!-- 按 Nacos 服务名调用 jy-user -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
+
+        <!-- @Log / @ApiLog 切面 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aspectj</artifactId>
+        </dependency>
+
+        <!-- Servlet/WebMVC 仅编译期使用，由接入方 Web 应用提供运行时 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- 生成 Spring 配置元数据 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+    </build>
+</project>

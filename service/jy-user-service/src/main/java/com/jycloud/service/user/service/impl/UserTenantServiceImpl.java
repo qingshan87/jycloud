@@ -19,7 +19,7 @@ import com.jycloud.service.user.service.UserAuthorityService;
 import com.jycloud.service.user.service.UserDataPermissionService;
 import com.jycloud.service.user.service.UserDeptService;
 import com.jycloud.service.user.service.UserTenantService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.jycloud.tool.common.api.ResponseCode;
 import com.jycloud.tool.common.exception.SysException;
 import lombok.RequiredArgsConstructor;

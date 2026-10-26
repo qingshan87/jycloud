@@ -8,7 +8,7 @@ import com.jycloud.service.user.cache.UserPermissionCache;
 import com.jycloud.service.user.cache.UserRoleCache;
 import com.jycloud.service.user.repository.mapper.UserAuthorityMapper;
 import com.jycloud.service.user.service.UserAuthorityService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.jycloud.tool.common.api.ResponseCode;
 import com.jycloud.tool.common.exception.SysException;
 import lombok.RequiredArgsConstructor;

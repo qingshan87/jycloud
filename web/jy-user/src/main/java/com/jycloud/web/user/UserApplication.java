@@ -4,14 +4,12 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 // @EnableCaching         // 使用 @Cacheable 时取消注释
 @MapperScan("com.jycloud.**.mapper")
 @ComponentScan({"com.jycloud.web.user", "com.jycloud.service.user", "com.jycloud.service.auth", "com.jycloud.tool"})
-@EnableFeignClients(basePackages = "com.jycloud.**.feign")  // 精确扫描 Feign 接口
 @EnableDiscoveryClient  // 使用服务注册时取消注释
 @EnableAsync           // 使用 @Async 时取消注释
 @SpringBootApplication

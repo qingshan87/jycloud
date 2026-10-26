@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  * </p>
  *
  * @author yourname
- * @update 2026/05/25 - 适配 Spring Boot 3.2 + 安全加固
+ * @update 2026/10/24 - 适配 Spring Boot 4.1 + 安全加固
  */
 @Slf4j
 @RestControllerAdvice

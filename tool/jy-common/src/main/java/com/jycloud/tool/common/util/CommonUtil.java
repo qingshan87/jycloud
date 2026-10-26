@@ -96,6 +96,24 @@ public class CommonUtil {
         return StringUtils.lowerCase(result.toString());
     }
 
+    /**
+     * 字符串转 Long。
+     *
+     * @param value 待转换值
+     * @return 转换结果；空白或非法数字返回 null（不抛异常）
+     */
+    public static Long stringToLong(String value) {
+        if (StringUtils.isBlank(value)) {
+            return null;
+        }
+        try {
+            return Long.valueOf(value.trim());
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+
     public static void main(String[] args) throws Exception {
 
         System.out.println(UUIDv7Util.generate());

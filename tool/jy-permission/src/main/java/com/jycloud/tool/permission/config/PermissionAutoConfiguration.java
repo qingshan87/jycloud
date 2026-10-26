@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Bean;
  * 各微服务需要自行注入 {@link PermissionProvider} 的实现：
  * <ul>
  *   <li>jy-user-service：注入缓存优先的 {@code UserRoleProvider / UserPermissionProvider}（本地实现）</li>
- *   <li>jy-business：注入通过 Feign 远程调用的 {@code RemotePermissionProvider}</li>
+ *   <li>jy-business：注入通过 HttpExchange 远程调用的 {@code RemotePermissionProvider}</li>
  * </ul>
  * </p>
  *

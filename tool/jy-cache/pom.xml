@@ -13,7 +13,7 @@
     <packaging>jar</packaging>
 
     <dependencies>
-        <!-- Redis 核心 -->
+        <!-- Redis 客户端与 Spring Data 自动配置 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
@@ -25,22 +25,13 @@
             <artifactId>commons-pool2</artifactId>
         </dependency>
 
-        <!-- Fastjson2 序列化（fastjson2-extension-spring6 含 Redis 序列化器） -->
+        <!-- 公共 JSON、上下文与自动配置基础设施 -->
         <dependency>
-            <groupId>com.alibaba.fastjson2</groupId>
-            <artifactId>fastjson2</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba.fastjson2</groupId>
-            <artifactId>fastjson2-extension-spring6</artifactId>
+            <groupId>com.jycloud</groupId>
+            <artifactId>jy-common</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
+        <!-- 生成 Redis 客户端配置元数据 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
